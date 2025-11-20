@@ -1,0 +1,31 @@
+resources:
+  jobs:
+    4_orquestracao_notebooks:
+      name: 4_orquestracao_notebooks
+      schedule:
+        quartz_cron_expression: 13 0 13 * * ?
+        timezone_id: America/Sao_Paulo
+        pause_status: UNPAUSED
+      tasks:
+        - task_key: extracao_bronze
+          notebook_task:
+            notebook_path: /Workspace/Users/chab@cin.ufpe.br/RocketLabDados-2025.2/Atividade02
+              - Bronze e Silver Layer/Atividade2_land_to_bronze.ipynb
+            source: WORKSPACE
+        - task_key: conversao_silver
+          depends_on:
+            - task_key: extracao_bronze
+          notebook_task:
+            notebook_path: /Workspace/Users/chab@cin.ufpe.br/RocketLabDados-2025.2/Atividade02
+              - Bronze e Silver Layer/Atividade2_bronze_to_silver.ipynb
+            source: WORKSPACE
+        - task_key: transformacao_gold
+          depends_on:
+            - task_key: conversao_silver
+          notebook_task:
+            notebook_path: /Workspace/Users/chab@cin.ufpe.br/RocketLabDados-2025.2/Atividade03
+              - Gold Layer/Atividade3_silver_to_gold
+            source: WORKSPACE
+      queue:
+        enabled: true
+      performance_target: PERFORMANCE_OPTIMIZED
